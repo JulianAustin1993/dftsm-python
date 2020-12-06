@@ -24,9 +24,12 @@ def plss(Y, B, P, log_lambda):
         log_lambda (np.ndarray): The regularisation parameter value used in the smoothing methodology in log form.
 
     """
-    BtB = np.matmul(B.T, B)
-    chol_temp = scipy.linalg.cho_factor(BtB + 10 ** log_lambda * P, lower=True, check_finite=False)
-    C = scipy.linalg.cho_solve(chol_temp, np.matmul(Y, B).T, check_finite=False)
+    LP, _ = scipy.linalg.cho_factor(P, lower=True, check_finite=False)
+    augmentedX = np.vstack((B, np.sqrt(10**log_lambda)*LP))
+    augmentedY = np.concatenate((Y, np.zeros(P.shape[0])))
+    q,r = scipy.linalg.qr(augmentedX, mode='economic')
+    qty = q.T @ augmentedY
+    C = scipy.linalg.solve_triangular(r, qty)
     return C, log_lambda
 
 
