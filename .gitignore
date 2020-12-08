@@ -1,4 +1,5 @@
 .ipynb_checkpoints
 .DS_Store
-./data/*
 __pycache__
+data/
+data/surface_disp_raw
