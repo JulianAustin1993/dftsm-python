@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.linalg
-from plssmooth import plss
+from smooth import plss
 
 def PCA(data, n_components=2):
     """Implementation of multivariate PCA. 
