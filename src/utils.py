@@ -300,9 +300,33 @@ class GP:
         return fs, V
         
 def whiteNoise(var, ds_size):
+    """Generate a white noise error process.
+
+    Args:
+        var (float): Variance of the process.
+        ds_size (tuple): Shape of process output.
+
+    Returns:
+        (ndarray): The white noise process of shape `ds_size`.
+    """
     return np.random.normal(0, var, ds_size)
 
 def structNoise(var, ds_size, l=0.2, scale_percent=20):
+    """Generate a spatially structured noise process.
+
+    Generate `ds_size[0]` replications of spatially structured process. The process is 
+    spatially correlated by the Matern kernel function in twp dimensions with lengthscale `l`.
+
+    Args:
+        var (float): Variance of the process.
+        ds_size (tuple): Shape of process output.
+        l (float): Lengthscale of the Matern Kernel generating the process.
+        scale_percent (int): The scale percentage to use when ds_size is large.
+
+    Returns:
+        (ndarray): Noise process which is spatiall structured via a GP with Matern kernel. 
+
+    """
     kernel = Matern(nu=1.5, sigma=np.sqrt(var), rho=[l,l])
     n = ds_size[0]
     width = int(ds_size[2] * scale_percent / 100)

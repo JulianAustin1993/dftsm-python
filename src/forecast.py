@@ -20,6 +20,11 @@ def forecast_score(score, x_ob, x_new):
 
 def forecast(Y_noisy, Y_true, t, B, P, log_lambda, nderiv, J, N_train, steps, ncomp, use_mafr=False):
     """Forecast methodology to a single simulated data set with noise. 
+
+    Methodology based on the FTSA methodology, [1].
+
+    [1]H. Shang Lin, ‘ftsa: An R Package for Analyzing Functional Time Series’, The R Journal, vol. 5, no. 1, p. 64, 2013, doi: 10.32614/RJ-2013-006.
+
     
     Args:
         Y_noisy (ndarray): Noisy simulated data set to forecast. 

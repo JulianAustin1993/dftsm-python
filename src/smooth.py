@@ -6,6 +6,11 @@ import scipy.optimize
 def plss(Y, B, P, log_lambda, nderiv,  method="QR"):
     """Implementation of penalised least squares for fixed hyperparameter
 
+    Based on Penalised spline smoothing from [1].
+
+    [1]J. O. Ramsay and B. W. Silverman, Functional data analysis. New York (N.Y.): Springer Science+Business Media, 2010.
+
+
     Args:
         Y (np.ndarray): Two dimensional observation array with subjects in first dimension and observatinos along
         the second.
