@@ -1,7 +1,7 @@
 # A Makefile for compiling LaTeX documents.
 #------------------------------------------------------------------------------
 OBJECT		= beamer
-NAME		= draft
+NAME		= beamer-pres
 BIBTEX		= true
 LATEX		= lualatex
 TEX_SOURCES	= $(wildcard *.tex) $(wildcard ./*/*.tex)
