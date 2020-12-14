@@ -3,7 +3,9 @@ DFTSM
 
 Dynamic Functional Time Series Modelling in Python. This repo collect various python code and notebooks which runs the modelling for both simulation and an exapmle data set for image forecasting using functional decomposition techniques. 
 
-This work is to examine the use of functional decomposition techniques such as FPCA, [1] and MAFR, [2] for forecasting time series of remote sensing imagery. We use the functional time series forecasting techniques of [3] but applies to bivariate functional data and compare the use of eigenfuncitions obtained through both FPCA and MAFR decompositions. 
+This work is to examine the use of functional decomposition techniques such as FPCA, [1] and MAFR, [2] for forecasting time series of remote sensing imagery. We use the functional time series forecasting techniques of [3] but applied to bivariate functional data and compare the use of eigenfuncitions obtained through both FPCA and MAFR decompositions. 
+
+We are interested in comparing the effects of such decomposition techniques on the ability to forecast the imagery. 
 
 
 Structure
