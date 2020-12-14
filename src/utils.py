@@ -5,6 +5,7 @@ from scipy.special import kv, gamma
 from scipy.spatial.distance import squareform, pdist, cdist
 from scipy.optimize import minimize
 import math
+import cv2
 
 
 class Kernel(ABC):
@@ -298,5 +299,16 @@ class GP:
         V = Kss - np.matmul(v.T, v)
         return fs, V
         
-        
-    
+def whiteNoise(var, ds_size):
+    return np.random.normal(0, var, ds_size)
+
+def structNoise(var, ds_size, l=0.2, scale_percent=20):
+    kernel = Matern(nu=1.5, sigma=np.sqrt(var), rho=[l,l])
+    n = ds_size[0]
+    width = int(ds_size[2] * scale_percent / 100)
+    height = int(ds_size[1] * scale_percent / 100)
+    s =  np.array(np.meshgrid(np.linspace(0,1,height), np.linspace(0,1,width))).reshape(2,-1).T 
+    gp = GP(kernel)
+    sn = gp.draw(s, n).reshape(n, width, height)
+    output = np.array([cv2.resize(sni, (ds_size[2], ds_size[1]), interpolation = cv2.INTER_CUBIC) for sni in sn]).reshape(n, -1)
+    return output

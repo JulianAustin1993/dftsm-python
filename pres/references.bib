@@ -1,0 +1,82 @@
+
+@book{ramsay_functional_2010,
+	address = {New York (N.Y.)},
+	title = {Functional data analysis},
+	isbn = {978-1-4419-2300-4},
+	language = {English},
+	publisher = {Springer Science+Business Media},
+	author = {Ramsay, James O and Silverman, Bernard W},
+	year = {2010},
+	note = {OCLC: 944022996}
+}
+
+@article{wood_p-splines_2017,
+	title = {P-splines with derivative based penalties and tensor product smoothing of unevenly distributed data},
+	volume = {27},
+	issn = {0960-3174, 1573-1375},
+	url = {http://arxiv.org/abs/1605.02446},
+	doi = {10.1007/s11222-016-9666-x},
+	abstract = {The P-splines of Eilers and Marx (1996) combine a B-spline basis with a discrete quadratic penalty on the basis coefﬁcients, to produce a reduced rank spline like smoother. P-splines have three properties that make them very popular as reduced rank smoothers: i) the basis and the penalty are sparse, enabling efﬁcient computation, especially for Bayesian stochastic simulation; ii) it is possible to ﬂexibly ‘mix-and-match’ the order of B-spline basis and penalty, rather than the order of penalty controlling the order of the basis as in spline smoothing; iii) it is very easy to set up the Bspline basis functions and penalties. The discrete penalties are somewhat less interpretable in terms of function shape than the traditional derivative based spline penalties, but tend towards penalties proportional to traditional spline penalties in the limit of large basis size. However part of the point of P-splines is not to use a large basis size. In addition the spline basis functions arise from solving functional optimization problems involving derivative based penalties, so moving to discrete penalties for smoothing may not always be desirable. The purpose of this note is to point out that the three properties of basis-penalty sparsity, mix-and-match penalization and ease of setup are readily obtainable with B-splines subject to derivative based penalization. The penalty setup typically requires a few lines of code, rather than the two lines typically required for P-splines, but this one off disadvantage seems to be the only one associated with using derivative based penalties. As an example application, it is shown how basis-penalty sparsity enables efﬁcient computation with tensor product smoothers of scattered data.},
+	language = {en},
+	number = {4},
+	urldate = {2020-03-11},
+	journal = {Statistics and Computing},
+	author = {Wood, Simon N.},
+	month = jul,
+	year = {2017},
+	note = {arXiv: 1605.02446},
+	pages = {985--989}
+}
+
+@article{shang_ftsa_2013,
+	title = {ftsa: {An} {R} {Package} for {Analyzing} {Functional} {Time} {Series}},
+	volume = {5},
+	issn = {2073-4859},
+	shorttitle = {ftsa},
+	url = {https://journal.r-project.org/archive/2013/RJ-2013-006/index.html},
+	doi = {10.32614/RJ-2013-006},
+	abstract = {Recent advances in computer recording and storing technology have tremendously increased the presence of functional data, whose graphical representation can be inﬁnite-dimensional curve, image, or shape. When the same functional object is observed over a period of time, such data are known as functional time series. This article makes ﬁrst attempt to describe several techniques (centered around functional principal component analysis) for modeling and forecasting functional time series from a computational aspect, using a readily-available R addon package. These methods are demonstrated using age-speciﬁc Australian fertility rate data from 1921 to 2006, and monthly sea surface temperature data from January 1950 to December 2011.},
+	language = {en},
+	number = {1},
+	urldate = {2020-05-01},
+	journal = {The R Journal},
+	author = {Shang, Lin, Han},
+	year = {2013},
+	pages = {64},
+	file = {Shang - 2013 - ftsa An R Package for Analyzing Functional Time S.pdf:/Users/b7064522/Zotero/storage/J4ITTXVU/Shang - 2013 - ftsa An R Package for Analyzing Functional Time S.pdf:application/pdf}
+}
+
+@article{hooker_maximal_2016,
+	title = {Maximal autocorrelation functions in functional data analysis},
+	volume = {26},
+	issn = {0960-3174, 1573-1375},
+	url = {http://link.springer.com/10.1007/s11222-015-9582-5},
+	doi = {10.1007/s11222-015-9582-5},
+	abstract = {This paper proposes a new factor rotation for the context of functional principal components analysis. This rotation seeks to re-express a functional subspace in terms of directions of decreasing smoothness as represented by a generalized smoothing metric. The rotation can be implemented simply and we show on two examples that this rotation can improve the interpretability of the leading components.},
+	language = {en},
+	number = {5},
+	urldate = {2020-06-04},
+	journal = {Statistics and Computing},
+	author = {Hooker, Giles and Roberts, Steven},
+	month = sep,
+	year = {2016},
+	pages = {945--950},
+	file = {Hooker and Roberts - 2016 - Maximal autocorrelation functions in functional da.pdf:/Users/b7064522/Zotero/storage/TBHAKW34/Hooker and Roberts - 2016 - Maximal autocorrelation functions in functional da.pdf:application/pdf}
+}
+
+@article{wood_low-rank_2006,
+	title = {Low-rank scale-invariant tensor product smooths for generalized additive mixed models},
+	volume = {62},
+	issn = {0006-341X},
+	doi = {10.1111/j.1541-0420.2006.00574.x},
+	abstract = {A general method for constructing low-rank tensor product smooths for use as components of generalized additive models or generalized additive mixed models is presented. A penalized regression approach is adopted in which tensor product smooths of several variables are constructed from smooths of each variable separately, these "marginal" smooths being represented using a low-rank basis with an associated quadratic wiggliness penalty. The smooths offer several advantages: (i) they have one wiggliness penalty per covariate and are hence invariant to linear rescaling of covariates, making them useful when there is no "natural" way to scale covariates relative to each other; (ii) they have a useful tuneable range of smoothness, unlike single-penalty tensor product smooths that are scale invariant; (iii) the relatively low rank of the smooths means that they are computationally efficient; (iv) the penalties on the smooths are easily interpretable in terms of function shape; (v) the smooths can be generated completely automatically from any marginal smoothing bases and associated quadratic penalties, giving the modeler considerable flexibility to choose the basis penalty combination most appropriate to each modeling task; and (vi) the smooths can easily be written as components of a standard linear or generalized linear mixed model, allowing them to be used as components of the rich family of such models implemented in standard software, and to take advantage of the efficient and stable computational methods that have been developed for such models. A small simulation study shows that the methods can compare favorably with recently developed smoothing spline ANOVA methods.},
+	language = {eng},
+	number = {4},
+	journal = {Biometrics},
+	author = {Wood, Simon N.},
+	month = dec,
+	year = {2006},
+	pmid = {17156276},
+	pages = {1025--1036},
+	file = {Accepted Version:/Users/b7064522/Zotero/storage/UMW4ICHL/Wood - 2006 - Low-rank scale-invariant tensor product smooths fo.pdf:application/pdf}
+}

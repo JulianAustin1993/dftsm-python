@@ -1,0 +1,382 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{bm}
+\DeclareMathOperator*{\argmax}{argmax}
+\definecolor{nclblue}{RGB}{0,63,114}
+\definecolor{nclred}{RGB}{198,12,48}
+\usetheme[titleformat=smallcaps,block=fill, progressbar=frametitle]{metropolis}
+\setbeamertemplate{frame numbering}[none]
+\setbeamercolor{frametitle}{bg = nclblue}
+\setbeamercolor{alerted text}{fg=nclred}
+\usepackage{bm, amsmath, booktabs}
+\setsansfont[
+  BoldFont={Fira Sans SemiBold},
+  ItalicFont={Fira Sans BookItalic},
+  BoldItalicFont={Fira Sans SemiBold Italic}
+]{Fira Sans Book}
+\usepackage{csquotes}
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+\captionsetup{labelformat=empty}
+\setbeamerfont{bibliography item}{size=\footnotesize}
+\setbeamerfont{bibliography entry author}{size=\footnotesize}
+\setbeamerfont{bibliography entry title}{size=\footnotesize}
+\setbeamerfont{bibliography entry location}{size=\footnotesize}
+\setbeamerfont{bibliography entry note}{size=\footnotesize}
+\bibliographystyle{jfm}
+\newcommand{\ve}[1]{\bm{{#1}}}
+\title{Image forecasting using dynamical functional time series models}
+\date{\today}
+\author{Julian Austin}
+\institute{Newcastle University}
+\begin{document}
+  \maketitle
+  \begin{frame}
+    \frametitle{Motivation}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+          \item Remote sensing data is becoming readily available.
+          \item High spatial resolution, sometimes high temporal resolution.
+          \item Gridded observations are common.
+          \item Forecasting for next time step is useful.
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{center}
+          \includegraphics[width=0.8\textwidth]{./fig/img_funs.png}
+        \end{center}
+      \end{column}
+    \end{columns}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Motivation}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+          \item Cannonical way is to treat pixels over time as functional variables.
+          \item Spatial dependency needs to be considered. 
+          \item Forecasting with decomposition techniques is tricky as scores will be a function of space not time.
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{center}
+          \includegraphics[width=0.8\textwidth]{./fig/pixel_funs.png}
+        \end{center}
+      \end{column}
+    \end{columns}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Motivation}
+    \begin{itemize}
+      \item Consider each image as a functional variable.
+      \item Space is now our continious domain. 
+      \item Need to take into account temporal dependancy for forecasting.
+      \item Utilise functional decomposition to aid in this. 
+      \item Can we choose a decomposition which is helpful in the forecasting. 
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Data Generating Process}
+    \begin{itemize}
+      \item Consider data being generated from a set of eigenfunctions, $\{\phi_k(\ve{s})\}_{k=1}^K$. 
+      \item Out $i^\text{th}$ observed image is then a weighted sum of these eigenfunctions: 
+        \begin{equation}
+          x_i(\ve{s}) = \sum_{k=1}^K \zeta_{ik} \phi_k(\ve{s})
+          \label{eqn:ef}
+        \end{equation}
+      \item $\zeta_{ik} = \zeta_k(t_i)$ is the score for the $k^\text{th}$ eigenfunctioin at time $t_i$.
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Data Generating Process}
+    \begin{itemize}
+      \item Observations are made with error, $\varepsilon(t, \ve{s})$:
+        \begin{equation}
+          y_i(\ve{s}) = x_i(\ve{s}) + \varepsilon(t_i, \ve{s})
+          \label{eqn:ef_err}
+        \end{equation}
+        where $\varepsilon$ is an error process which is independent across time and from the eigenfunctions. 
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Data Generating Process}
+    \begin{itemize}
+      \item The score process represents the temporal dependancy and so we impose a structure:
+        \begin{equation}
+          \zeta_k(t) \sim \mathcal{GP}\left( 0, K(t, t^\prime, ; \theta_k) \right)
+          \label{eqnLscores}
+        \end{equation}
+      \item $\theta_k$ are the set of hyper-paramters controlling the Gaussian process kernel function.
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Methodology}
+    \begin{itemize}
+      \item Given our data generating process we need to estimate:
+        \begin{itemize}
+          \item Eigenfunctions
+          \item Score process - kernel hyper-parameters.
+        \end{itemize}
+      \item This is the FPCA/MAFR decomposition, \cite{ramsay_functional_2010, hooker_maximal_2016}. 
+      \item To forecast the data set we can then consider eigenfunctions fixed and forecast the estimated score process. 
+      \item This is the FTSA methodology, \cite{shang_ftsa_2013}.
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{FPCA, \cite{ramsay_functional_2010}}
+      \begin{itemize}
+        \item FPCA gives us an estimated eigenfunction system $\{\hat{\phi}_k(\ve{s})\}_{k=1}^K$ which we can express in our basis system:
+          \begin{equation}
+            \hat{\phi}_k(\ve{s}) = \sum_{i=1}^{K_b}\hat{c}_i b_i(\ve{s})
+            \label{eqn:basis_ef}
+          \end{equation}
+          where $b_i$ is our $i^\text{th}$ basis function.
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{MAFR, \cite{hooker_maximal_2016}}
+      \begin{itemize}
+        \item We want to ensure smoothness in leading components of a principal comoponent decomposition.
+        \item Does so by applying a rotation $U$ to the estimated eigenfunctions:
+          \begin{equation}
+            \hat{\Phi}_\text{mafr} = U^\prime \hat{\Phi}_\text{fpca}
+            \label{eqn:mafr}
+          \end{equation}
+        \item $U$ is the matrix of eigenvectors from the eigen decompostion of penalty matrix $P$ which enforces the kind of smoothenss. 
+        \item Corresponding adustment to the scores, $\ve{\zeta}_{i}^\text{mafr} = U \ve{\zeta}_{i}^\text{fpca}$.
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{FTSA, \cite{shang_ftsa_2013}}
+    \begin{itemize}
+      \item Methodology of how to forecast time series of functional observations.
+      \item The h-step ahead forecast is given by:
+        \begin{equation}
+          x_{i+h | i} (\ve{s}) = \sum_{i=1}^{K} \hat{\zeta}_{i+h|i, k} \phi_k(\ve{s})
+          \label{eqn:score_for}
+        \end{equation}
+        where $\hat{\zeta}_{i+h | i, k}$ are the h-step ahead forecast using univariate forecasting techniques. 
+      \item In our case we first need to estimate the Kernel hyperparameters from the observed scores for each component. 
+      \item Forecasting is then $\hat{\zeta}_{i+h | i, k} = \hat{\zeta}_k(i+h | i; \hat{\theta}_k)$ 
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Implementattion}
+    \begin{itemize}
+      \item Used tenosr product of B-spline basis functions with $25$ functions in each dimension.
+      \item For regularisation we use a bivariate B-spline basis system with a second derivative tensor product penalty, \cite{wood_low-rank_2006}:
+        \begin{equation}
+          P = P_1 \otimes I_2 + I_1 \otimes P_2 
+          \label{eqn:reg}
+        \end{equation}
+        where $P_i$ is the marginal second derivative penalty matrix for the $i^\text{th}$ dimension.
+      \item Use same penalty matrix form FPCA regularisation and MAFR calculation.   
+    \end{itemize}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{Example - Simulation}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+          \item Example simulation with $25$ eigenfunctions:
+            \begin{eqnarray*}
+              \phi_1(\ve{s}) & = & \ve{s}_1 + \sin\left( 2 \pi \ve{s}_2 \right) \\
+              \phi_2(\ve{s}) & = & \ve{s}_2 + \cos\left( 2 \pi \ve{s}_1 \right) \\
+              \phi_k(\ve{s}) & = & \sin(0.2 \pi k \lVert \ve{s} \rVert) \\
+            \end{eqnarray*}
+          \item Scores are governed by a Gaussian process with Matern kernel with $\sigma^2_k = 0.5e^{\frac{-k}{4}}$ and $l_k = e^{\frac{-k}{5}}$.
+
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{center}
+          \includegraphics[width=0.8\textwidth]{./fig/simulation/sim_unob_eig.png}
+          \includegraphics[width=0.8\textwidth]{./fig/simulation/sim_unob_scores.png}
+        \end{center}
+      \end{column}
+    \end{columns}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Example - Simulation}
+    \begin{center}
+      \includegraphics[width=0.8\textwidth]{./fig/simulation/sim_unob.png}
+    \end{center}
+  \end{frame}
+  \begin{frame}
+    \frametitle{Example - Simulation Noise}
+    \begin{columns}[t]
+      \begin{column}{.5\textwidth}
+      \begin{figure}
+        \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/simulation/sim_actual.png}
+      \caption{Unobserved Surface}
+      \end{figure}%
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/simulation/sim_ln.png}
+      \caption{Low variance noise}
+      \end{figure}
+      \end{column}
+      \begin{column}{.5\textwidth}
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/simulation/sim_hn.png}
+      \caption{High variance noise}
+      \end{figure}%
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/simulation/sim_sn.png}
+      \caption{Spatially structured noise}
+      \end{figure}
+      \end{column}
+    \end{columns}
+  \end{frame}
+  \begin{frame}
+    \frametitle{Example - Simulation Decomposition}
+    \begin{center}
+      \includegraphics[width=0.8\textwidth]{./fig/simulation/sim_eigen_ln.png}
+    \end{center}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{Example - Simulation Forecast Scores}
+    \begin{center}
+      \includegraphics[width=0.8\textwidth]{./fig/simulation/sim_scores_ln.png}
+    \end{center}
+  \end{frame}
+  
+
+  \begin{frame}
+    \frametitle{Example - Simulation Results}
+    \begin{table}[h]
+        \setlength{\arrayrulewidth}{1.5px}
+        \setlength{\tabcolsep}{10pt}
+        \centering
+        \begin{tabular}{lcccccc} \toprule
+            & \multicolumn{2}{c}{Low Noise} & \multicolumn{2}{c}{High Noise} & \multicolumn{2}{c}{Strutured Noise} \\
+            step-ahead & FPCA & MAFR & FPCA & MAFR & FPCA & MAFR \\ \bottomrule
+            1 & \textbf{0.104} & \textbf{0.104} & 0.116 & \textbf{0.115} & 0.239 & \textbf{0.237} \\
+            3 & 0.110 & \textbf{0.109} & 0.123 & \textbf{0.122} & 0.251 & \textbf{0.249} \\
+            10 & 0.138 & \textbf{0.137} & \textbf{0.153} & \textbf{0.153} & 0.296 & \textbf{0.294} \\
+            25 & 0.246 & \textbf{0.241} & \textbf{0.259} & 0.260 & 0.418 & \textbf{0.416} \\
+            \bottomrule
+        \end{tabular}
+        \caption{RMSE from forecasted simulation data set with various noise processes.}
+    \end{table}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Example - Surface Displacement}
+    
+    \begin{center}
+      \includegraphics[width=0.8\textwidth]{./fig/surf_disp/surf_disp_unob.png}
+    \end{center}
+    
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Example - Surface Displcement Noise}
+    \begin{columns}[t]
+      \begin{column}{.5\textwidth}
+      \begin{figure}
+        \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_actual.png}
+      \caption{Unobserved Surface}
+      \end{figure}%
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_ln.png}
+      \caption{Low variance noise}
+      \end{figure}
+      \end{column}
+      \begin{column}{.5\textwidth}
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_hn.png}
+      \caption{High variance noise}
+      \end{figure}%
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_sn.png}
+      \caption{Spatially structured noise}
+      \end{figure}
+      \end{column}
+    \end{columns}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{Example - Surface Displacement Results}
+    \begin{table}[h]
+        \setlength{\arrayrulewidth}{1.5px}
+        \setlength{\tabcolsep}{10pt}
+        \centering
+        \begin{tabular}{lcccccc} \toprule
+            & \multicolumn{2}{c}{Low Noise} & \multicolumn{2}{c}{High Noise} & \multicolumn{2}{c}{Strutured Noise} \\
+            step-ahead & FPCA & MAFR & FPCA & MAFR & FPCA & MAFR \\ \bottomrule
+            1 & \textbf{5.795} & \textbf{5.795} & \textbf{5.806} & \textbf{5.806} & 6.019 & \textbf{6.005} \\
+            3 & \textbf{5.793} & \textbf{5.792} & \textbf{5.805} & \textbf{5.805} & 6.137 & \textbf{6.082} \\
+            10 & \textbf{5.800} & \textbf{5.800} & \textbf{5.822} & \textbf{5.822} & 6.391 & \textbf{6.314} \\
+            25 & \textbf{5.919} & \textbf{5.919} & \textbf{6.028} & \textbf{6.028} & 0.7432 & \textbf{7.248} \\
+            \bottomrule
+        \end{tabular}
+        \caption{RMSE from forecasted surface displacement data set with various noise processes.}
+    \end{table}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Example - Surface Displacement Reconstruction - 3 step ahead}
+    \begin{columns}[t]
+      \begin{column}{.33\textwidth}
+      \begin{figure}
+        \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_recon_actual_sn.png}
+      \caption{Unobserved Surface}
+      \end{figure}
+      \end{column}
+      \begin{column}{.33\textwidth}
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_recon_reg-fpca_sn.png}
+      \caption{FPCA Reconstruction}
+      \end{figure}
+      \end{column}
+      \begin{column}{.33\textwidth}
+      \begin{figure}
+      \includegraphics[width=\linewidth, height=.25\textheight, keepaspectratio]{./fig/surf_disp/surf_disp_recon_reg-mafr_sn.png}
+      \caption{MAFR Reconstruction}
+      \end{figure}
+      \end{column}
+    \end{columns}
+  \end{frame}
+  
+
+  \begin{frame}
+    \frametitle{Conclusions}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+          \item Both FPCA and MAFR are useful decomposition for functional imagery.
+          \item MAFR decomposition helps in forecasting scores when noise also exhibits spatial correlation. 
+          \item Treating space as continious domain helps in dealing with high dimensionality. Although may be restricted by basis functions. 
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{center}
+          \includegraphics[width=0.8\textwidth]{./fig/qr.png}
+        \end{center}
+      \end{column}
+    \end{columns}
+    
+  \end{frame}
+  
+
+  \section{References}
+  \begin{frame}[allowframebreaks]
+  \frametitle{\secname}
+  \tiny{\bibliography{references}}
+  \end{frame}
+
+\end{document}

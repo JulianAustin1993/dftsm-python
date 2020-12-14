@@ -14,7 +14,7 @@ def forecast_score(score, x_ob, x_new):
         mu_for (ndarray): posterior mean of the fitted gaussian process.
     """
     gp = GP(Matern(nu=2.5, rho=1.0, sigma=1.0))
-    gp.fit(x_ob, score.T, bounds=[(-6,3), (-6,3), (-6, 2)], n_init=25)
+    gp.fit(x_ob, score.T, bounds=[(-6,2), (-6,2), (-6, 2)], n_init=100)
     mu_for, V_for = gp.posterior(x_new, mean_only=True)
     return mu_for
 
