@@ -17,5 +17,8 @@ The structure of this repo is explained below:
 * src - This directory holds the python modules that we use within the notebooks. 
 
 [1]: J. O. Ramsay and B. W. Silverman, Functional data analysis. New York (N.Y.): Springer Science+Business Media, 2010.
+
 [2]: G. Hooker and S. Roberts, ‘Maximal autocorrelation functions in functional data analysis’, Stat Comput, vol. 26, no. 5, pp. 945–950, Sep. 2016, doi: 10.1007/s11222-015-9582-5.
+
 [3]: H. Shang Lin, ‘ftsa: An R Package for Analyzing Functional Time Series’, The R Journal, vol. 5, no. 1, p. 64, 2013, doi: 10.32614/RJ-2013-006.
+
