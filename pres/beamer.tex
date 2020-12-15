@@ -25,6 +25,8 @@
 \setbeamerfont{bibliography entry note}{size=\footnotesize}
 \bibliographystyle{jfm}
 \newcommand{\ve}[1]{\bm{{#1}}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
 \title{Image forecasting using dynamical functional time series models}
 \date{\today}
 \author[shortname]{Julian Austin \textsuperscript{1} \and Jian Qinq-Shi \inst{2} \and Zhenhong Li \inst{1}}
@@ -83,7 +85,7 @@
     \frametitle{Data Generating Process}
     \begin{itemize}
       \item Consider data being generated from a set of eigenfunctions, $\{\phi_k(\ve{s})\}_{k=1}^K$. 
-      \item Out $i^\text{th}$ observed image is then a weighted sum of these eigenfunctions: 
+      \item Our $i^\text{th}$ observed image is then a weighted sum of these eigenfunctions: 
         \begin{equation}
           x_i(\ve{s}) = \sum_{k=1}^K \zeta_{ik} \phi_k(\ve{s})
           \label{eqn:ef}
@@ -135,24 +137,61 @@
       \begin{itemize}
         \item FPCA gives us an estimated eigenfunction system $\{\hat{\phi}_k(\ve{s})\}_{k=1}^K$ which we can express in our basis system:
           \begin{equation}
-            \hat{\phi}_k(\ve{s}) = \sum_{i=1}^{K_b}\hat{c}_i b_i(\ve{s})
+            \hat{\phi}_k(\ve{s}) = \sum_{j=1}^{K_b}\hat{c}_j b_j(\ve{s})
             \label{eqn:basis_ef}
           \end{equation}
-          where $b_i$ is our $i^\text{th}$ basis function.
+          where $b_j$ is our $j^\text{th}$ basis function.
+        \item Reconstruction is given by:
+          \begin{equation}
+            \hat{x}_i(\ve{s}) = \sum_{k=1}^K \hat{\zeta}_{ik} \hat{\phi}_k(\ve{s})
+            \label{eqn:fpca}
+          \end{equation}
+          where $\hat{\zeta}_{ik}$ is the estimated score for the $k^\text{th}$ component of the $i^\text{th}$ subject.
       \end{itemize}
   \end{frame}
 
   \begin{frame}
     \frametitle{MAFR, \cite{hooker_maximal_2016}}
       \begin{itemize}
-        \item We want to ensure smoothness in leading components of a principal comoponent decomposition.
-        \item Does so by applying a rotation $U$ to the estimated eigenfunctions:
+        \item Functional version of MAF.
+        \item MAF aims to find linear combinations of data that have maximal autocorrelation. 
+        \item We want to ensure predictableness in leading components of a principal comoponent decomposition.
+        \item Treat as a factor rotation of the fPCA components. 
+      \end{itemize}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{MAFR, \cite{hooker_maximal_2016}}
+      \begin{itemize}
+        \item MAFR criterion:
+          \begin{equation}
+          \text{MAFR}_L(\ve{b}) = \frac{\ve{b}^\prime \left( \int L\ve{\phi}(\ve{s}) L \ve{\phi}(\ve{s}) d\ve{s}\right) \ve{b}}{\ve{b}^\prime \int \ve{\phi}(\ve{s})^\prime \ve{\phi}(\ve{s}) d\ve{s} \ve{b}}
+            \label{eqn:mafr}
+          \end{equation}
+          where $L$ is a linear differential operator. 
+        \item $P = \int  L\ve{\phi}(\ve{s}) L \ve{\phi}(\ve{s}) d\ve{s}$
+        \item First rotation $\hat{b}$ given by:
+          \begin{equation}
+            \hat{\ve{b}} = \argmin_{\ve{b}} \left( \ve{b}^\prime P \ve{b} \right)~\text{subject to }~\ve{b}^\prime \ve{b} = 1
+            \label{eqn:mafr_rot}
+          \end{equation}
+        \item Succeding rotation are given by the Eigen decomposition of $P$.
+          \begin{equation}
+            P = U D U^\prime
+            \label{eqn:P}
+          \end{equation}
+      \end{itemize}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{MAFR, \cite{hooker_maximal_2016}}
+      \begin{itemize}
+        \item MAFR decomposition acts by applying the rotation $U$ to the estimated eigenfunctions:
           \begin{equation}
             \hat{\Phi}_\text{mafr} = U^\prime \hat{\Phi}_\text{fpca}
             \label{eqn:mafr}
           \end{equation}
-        \item $U$ is the matrix of eigenvectors from the eigen decompostion of penalty matrix $P$ which enforces the kind of smoothenss. 
-        \item Corresponding adustment to the scores, $\ve{\zeta}_{i}^\text{mafr} = U \ve{\zeta}_{i}^\text{fpca}$.
+        \item Corresponding rotation to the scores, $\ve{\zeta}_{i}^\text{mafr} = U \ve{\zeta}_{i}^\text{fpca}$.
       \end{itemize}
   \end{frame}
 
@@ -172,7 +211,7 @@
   \end{frame}
 
   \begin{frame}
-    \frametitle{Implementattion}
+    \frametitle{Implementation}
     \begin{itemize}
       \item Used tenosr product of B-spline basis functions with $25$ functions in each dimension.
       \item For regularisation we use a bivariate B-spline basis system with a second derivative tensor product penalty, \cite{wood_low-rank_2006}:
@@ -361,6 +400,24 @@
           \item Both FPCA and MAFR are useful decomposition for functional imagery.
           \item MAFR decomposition helps in forecasting scores when noise also exhibits spatial correlation. 
           \item Treating space as continious domain helps in dealing with high dimensionality. Although may be restricted by basis functions. 
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{center}
+          \includegraphics[width=0.8\textwidth]{./fig/qr.png}
+        \end{center}
+      \end{column}
+    \end{columns}
+    
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{Future Work}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+          \item Score process being governed by a Gaussian Process induces correlation. 
+          \item Correlated functional data via such a process and allowing for covariates.
         \end{itemize}
       \end{column}
       \begin{column}{0.5\textwidth}
