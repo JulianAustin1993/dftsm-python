@@ -74,7 +74,7 @@
     \frametitle{Motivation}
     \begin{itemize}
       \item Consider each image as a functional variable.
-      \item Space is now our continious domain. 
+      \item Space is now our continuous domain. 
       \item Need to take into account temporal dependancy for forecasting.
       \item Utilise functional decomposition to aid in this. 
       \item Can we choose a decomposition which is helpful in the forecasting. 
@@ -90,7 +90,7 @@
           x_i(\ve{s}) = \sum_{k=1}^K \zeta_{ik} \phi_k(\ve{s})
           \label{eqn:ef}
         \end{equation}
-      \item $\zeta_{ik} = \zeta_k(t_i)$ is the score for the $k^\text{th}$ eigenfunctioin at time $t_i$.
+      \item $\zeta_{ik} = \zeta_k(t_i)$ is the score for the $k^\text{th}$ eigenfunction at time $t_i$.
     \end{itemize}
   \end{frame}
 
@@ -111,7 +111,7 @@
     \begin{itemize}
       \item The score process represents the temporal dependancy and so we impose a structure:
         \begin{equation}
-          \zeta_k(t) \sim \mathcal{GP}\left( 0, K(t, t^\prime, ; \theta_k) \right)
+          \zeta_k(t) \sim \mathcal{GP}\left( 0, A(t, t^\prime, ; \theta_k) \right)
           \label{eqnLscores}
         \end{equation}
       \item $\theta_k$ are the set of hyper-paramters controlling the Gaussian process kernel function.
@@ -155,7 +155,7 @@
       \begin{itemize}
         \item Functional version of MAF, \cite{switzer_minmax_1984}.
         \item MAF aims to find linear combinations of data that have maximal autocorrelation. 
-        \item We want to ensure predictableness in leading components of a principal comoponent decomposition.
+        \item We want to ensure predictableness in leading components of a principal component decomposition.
         \item Treat as a factor rotation of the fPCA components. 
       \end{itemize}
   \end{frame}
@@ -201,7 +201,7 @@
       \item Methodology of how to forecast time series of functional observations.
       \item The h-step ahead forecast is given by:
         \begin{equation}
-          x_{i+h | i} (\ve{s}) = \sum_{i=1}^{K} \hat{\zeta}_{i+h|i, k} \phi_k(\ve{s})
+          x_{i+h | i} (\ve{s}) = \sum_{k=1}^{K} \hat{\zeta}_{i+h|i, k} \phi_k(\ve{s})
           \label{eqn:score_for}
         \end{equation}
         where $\hat{\zeta}_{i+h | i, k}$ are the h-step ahead forecast using univariate forecasting techniques. 
@@ -213,14 +213,14 @@
   \begin{frame}
     \frametitle{Implementation}
     \begin{itemize}
-      \item Used tenosr product of B-spline basis functions with $25$ functions in each dimension.
+      \item Used a tensor product of B-spline basis functions with $25$ functions in each dimension.
       \item For regularisation we use a bivariate B-spline basis system with a second derivative tensor product penalty, \cite{wood_low-rank_2006}:
         \begin{equation}
           P = P_1 \otimes I_2 + I_1 \otimes P_2 
           \label{eqn:reg}
         \end{equation}
         where $P_i$ is the marginal second derivative penalty matrix for the $i^\text{th}$ dimension.
-      \item Use same penalty matrix form FPCA regularisation and MAFR calculation.   
+      \item Used the same penalty matrix form for FPCA regularisation and MAFR calculation.   
     \end{itemize}
   \end{frame}
   
@@ -301,7 +301,7 @@
         \setlength{\tabcolsep}{10pt}
         \centering
         \begin{tabular}{lcccccc} \toprule
-            & \multicolumn{2}{c}{Low Noise} & \multicolumn{2}{c}{High Noise} & \multicolumn{2}{c}{Strutured Noise} \\
+            & \multicolumn{2}{c}{Low Noise} & \multicolumn{2}{c}{High Noise} & \multicolumn{2}{c}{Structured Noise} \\
             step-ahead & FPCA & MAFR & FPCA & MAFR & FPCA & MAFR \\ \bottomrule
             1 & \textbf{0.104} & \textbf{0.104} & 0.116 & \textbf{0.115} & 0.239 & \textbf{0.237} \\
             3 & 0.110 & \textbf{0.109} & 0.123 & \textbf{0.122} & 0.251 & \textbf{0.249} \\
@@ -355,7 +355,7 @@
         \setlength{\tabcolsep}{10pt}
         \centering
         \begin{tabular}{lcccccc} \toprule
-            & \multicolumn{2}{c}{Low Noise} & \multicolumn{2}{c}{High Noise} & \multicolumn{2}{c}{Strutured Noise} \\
+            & \multicolumn{2}{c}{Low Noise} & \multicolumn{2}{c}{High Noise} & \multicolumn{2}{c}{Structured Noise} \\
             step-ahead & FPCA & MAFR & FPCA & MAFR & FPCA & MAFR \\ \bottomrule
             1 & \textbf{5.795} & \textbf{5.795} & \textbf{5.806} & \textbf{5.806} & 6.019 & \textbf{6.005} \\
             3 & \textbf{5.793} & \textbf{5.792} & \textbf{5.805} & \textbf{5.805} & 6.137 & \textbf{6.082} \\
