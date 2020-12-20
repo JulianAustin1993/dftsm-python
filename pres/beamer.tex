@@ -57,7 +57,7 @@
     \begin{columns}
       \begin{column}{0.5\textwidth}
         \begin{itemize}
-          \item Cannonical way is to treat pixels over time as functional variables.
+          \item Canonical way is to treat pixels over time as functional variables.
           \item Spatial dependency needs to be considered. 
           \item Forecasting with decomposition techniques is tricky as scores will be a function of space not time.
         \end{itemize}
@@ -75,7 +75,7 @@
     \begin{itemize}
       \item Consider each image as a functional variable.
       \item Space is now our continuous domain. 
-      \item Need to take into account temporal dependancy for forecasting.
+      \item Need to take into account temporal dependency for forecasting.
       \item Utilise functional decomposition to aid in this. 
       \item Can we choose a decomposition which is helpful in the forecasting. 
     \end{itemize}
@@ -109,12 +109,12 @@
   \begin{frame}
     \frametitle{Data Generating Process}
     \begin{itemize}
-      \item The score process represents the temporal dependancy and so we impose a structure:
+      \item The score process represents the temporal dependency and so we impose a structure:
         \begin{equation}
           \zeta_k(t) \sim \mathcal{GP}\left( 0, A(t, t^\prime, ; \theta_k) \right)
           \label{eqnLscores}
         \end{equation}
-      \item $\theta_k$ are the set of hyper-paramters controlling the Gaussian process kernel function.
+      \item $\theta_k$ are the set of hyper-parameters controlling the Gaussian process kernel function.
     \end{itemize}
   \end{frame}
 
@@ -155,8 +155,8 @@
       \begin{itemize}
         \item Functional version of MAF, \cite{switzer_minmax_1984}.
         \item MAF aims to find linear combinations of data that have maximal autocorrelation. 
-        \item We want to ensure predictableness in leading components of a principal component decomposition.
-        \item Treat as a factor rotation of the fPCA components. 
+        \item We want to ensure predictability in leading components of a principal component decomposition.
+        \item Treat as a factor rotation of the FPCA components. 
       \end{itemize}
   \end{frame}
   
@@ -175,7 +175,7 @@
             \hat{\ve{b}} = \argmin_{\ve{b}} \left( \ve{b}^\prime P \ve{b} \right)~\text{subject to }~\ve{b}^\prime \ve{b} = 1
             \label{eqn:mafr_rot}
           \end{equation}
-        \item Succeding rotation are given by the Eigen decomposition of $P$.
+        \item Succeeding rotation are given by the Eigen decomposition of $P$.
           \begin{equation}
             P = U D U^\prime
             \label{eqn:P}
@@ -205,7 +205,7 @@
           \label{eqn:score_for}
         \end{equation}
         where $\hat{\zeta}_{i+h | i, k}$ are the h-step ahead forecast using univariate forecasting techniques. 
-      \item In our case we first need to estimate the Kernel hyperparameters from the observed scores for each component. 
+      \item In our case we first need to estimate the Kernel hyper-parameters from the observed scores for each component. 
       \item Forecasting is then $\hat{\zeta}_{i+h | i, k} = \hat{\zeta}_k(i+h | i; \hat{\theta}_k)$ 
     \end{itemize}
   \end{frame}
@@ -323,7 +323,7 @@
   \end{frame}
 
   \begin{frame}
-    \frametitle{Example - Surface Displcement Noise}
+    \frametitle{Example - Surface Displacement Noise}
     \begin{columns}[t]
       \begin{column}{.5\textwidth}
       \begin{figure}
@@ -399,7 +399,7 @@
         \begin{itemize}
           \item Both FPCA and MAFR are useful decomposition for functional imagery.
           \item MAFR decomposition helps in forecasting scores when noise also exhibits spatial correlation. 
-          \item Treating space as continious domain helps in dealing with high dimensionality. Although may be restricted by basis functions. 
+          \item Treating space as continuous domain helps in dealing with high dimensionality. Although may be restricted by basis functions. 
         \end{itemize}
       \end{column}
       \begin{column}{0.5\textwidth}
