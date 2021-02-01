@@ -1,0 +1,184 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb, amsthm,  bm, xcolor, graphicx}
+\usepackage[displaymath, mathlines]{lineno}
+\usepackage{natbib}
+\usepackage{setspace}
+\doublespacing
+
+\newcommand{\jianc}[1]{{\color{purple} #1}}
+\newcommand{\jian}[1]{{\color{blue} #1}}
+\newcommand{\julian}[1]{{\color{green} #1}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\ve}[1]{\bm{{#1}}}
+\newtheorem{assumption}{Assumption}
+\newtheorem{theorem}{Theorem}
+\newtheorem{remark}{Remark}
+\newtheorem{lemma}{Lemma}
+\renewcommand{\linenumberfont}{\normalfont\bfseries\small\color{red}}
+\linenumbers
+
+\bibliographystyle{rss}
+
+\title{Image Forecasting Using Dynamic Functional Time-Series Models}
+\author{Julian Austin}
+\date\today
+
+\begin{document}
+\maketitle
+\section{\label{sec:intro}Introduction}
+Recent advances in satellite technology have enabled the collection of high spatial resolution satellite imagery over the same scene with high frequency. Such remote sensing data sets offer a rich source of information which can be utilised for various reasons. Take for example the Sentinel satellite constellation series described succinctly in \citet{aschbacher_european_2012} the uses of such remote sensing data cover ocean, land and ice monitoring. We refer the reader to \citet{malenovsky_sentinels_2012} for a detailed description of the various studies available utilising Sentinel data. 
+
+Often a primary question of interest when using such data sets is how the imagery varies over time. An understanding of this would allow future variations to be quantified and the resultant forecasts to be fed back to decision makers as an additional source of information. As such producing forecast imagery from a time series of remote sensing images could be of great use. In the following, we propose a framework based on functional data analysis of time series of remote sensing imagery which describes the variation of the images over time. In addition we utilise a dynamical functional time series model to produce forecast of the images.
+
+Functional data analysis considers the modelling of data where observations are considered as functions over some continuous domain; for examples surfaces over a two dimensional space. The monographs of \citet{ramsay_functional_2010} and \citet{wang_functional_2016} both describe the details of analysing such functional data. One popular method in the functional data analysis literature for investigating modes of variation is Functional Principal Components Analysis (FPCA), see \citet{ramsay_functional_2010} and \citet{yao_functional_2005}. This is closely linked to the multivariate Principal Components Analysis (PCA), \cite{jolliffe_principal_2002},  and is often though of as the functional extension to it. Another more recent technique in dealing with functional variation is the Maximal Autocorrelation Factor Rotation (MAFR) introduced by \citet{hooker_maximal_2016}. Such a technique is inspired by the multivariate Maximal Autocorrelation Factor (MAF) rotation of PCA, \cite{switzer_minmax_1984}. The MAFR techniques aims to enhance the FPCA decomposition by finding a rotation of the principal components which promotes smoothness in the leading components. In the following, we consider utilising the decomposition methodologies of FPCA and MAFR to study the variation of a time series of remotely sensed imagery. We compare and contrast the ability of both techniques under different noise scenarios. 
+
+Finally we consider using such decompositions for forecasting imagery through time. A method which is closely linked to FPCA has been proposed by \citet{shang_ftsa_2013} for use on univariate functional data and is commonly referred to a Functional Time Series Analysis (FTSA). Such a method proposed forecasting the functional data by first decomposing into its functional decomposition and forecasting the score functions of that resultant decomposition. In doing so we reduce the complexity of forecasting highly dependent observations to forecasting univariate time series which can use a vast array of common time series approaches. We consider the ability of using FTSA approach with our imagery presented as bivariate functional data. In addition we propose the use of the MAFR decomposition under a similar framework as FTSA for forecasting.  We compare the ability of the FTSA forecasting using both the standard FPCA and MAFR decomposition for various step ahead forecasts under different noise scenarios. 
+
+We illustrate the ability of these methodologies on both synthetically generated data as well as real world interferometric synthetic aperture radar data set. 
+
+The remainder of the article is structured as follows. In Section~\ref{sec:fda} we set out the functional representation of a time series of remotely sensed imagery and the FPCA and MAFR decomposition techniques. In Section~\ref{sec:forecasting} we set out the forecasting framework utilising the FTSA model with the FPCA and MAFR decompositions. We consider the effectiveness of the models using a simulated data set in Section~\ref{sec:sim_exp} and using a real world interferometric synthetic aperture radar data set in Section~\ref{sec:real_exp}. Finally we draw conclusions of the article and propose future direction in Section~\ref{sec:conc}. 
+
+\section{\label{sec:fda}Functional Data Analysis Methodology}
+In a time series of remotely sensed images each observed pixel of the image can be indexed by three dimensions; one temporal and two spatial. The most usual presentation of functional data analysis is to consider discrete observations as samples from univariate functions indexed by a spatial location. For example see \citet{liu_functional_2017} on their treatment of spatially correlated functional data. However in our case we will consider our discrete observations as samples from bivariate functions or surfaces indexed by a temporal location.
+\subsection{\label{ssec:fda_rep}Functional Representation} 
+In the functional data analysis approach we consider our observed images as discrete observations from a realisation of an underlying stochastic process, $\mathcal{X}(\cdot)$, that is square integrable. Our observed sample of a single image consists of $N$ individual pixel values with locations denoted by $\ve{s}_1, \ve{s}_2, \dots, \ve{s}_N$ where each location lies in some domain $\mathcal{S} \subset \mathbb{R}^2$ representing our whole domain of the image. We assume our pixel values are observed with some error. Our data set then consists of $J$ images each of which is sampled as described giving our observation model as:
+\begin{equation}
+  y_i\left( \ve{s}_{ij} \right) = \chi_i\left( \ve{s}_{ij} \right) + \varepsilon_i\left( \ve{s}_{ij} \right)
+  \label{eqn:obs_model}
+\end{equation}
+where $y_i(\ve{s}_{ij})$ represents our observed pixel value for the $i^\text{th}$ image at spatial location $\ve{s}_{ij}$ for $i=1,2,\dots,J$ and $j=1,2,\dots,N$. $\chi_{i}\left( \cdot \right)$ represents the $i^\text{th}$ realisation of the stochastic process $\mathcal{X}$ which is our noise free image at time $i$. $\varepsilon_i\left( \cdot \right)$ represent the $i^\text{th}$ realisation of a noise process, which we will assume is independent across time but not necessarily independent in space.  
+
+In order to estimate our noise free image $\chi_i\left( \cdot \right)$ from our observed data $\{y_i(\ve{s}_{ij}) ; j=1,2,\dots,N\}$ we opt to utilise a smoothing methodology which is popular in the functional data literature known as penalised least square smoothing using a basis expansion, \cite{ramsay_functional_2010}.  In order to use such a methodology we assume that our process $\mathcal{X}$ can be represented in a known bivariate basis system. That is:
+\begin{equation}
+  \mathcal{X}\left( \ve{s} \right) = \sum_{\substack{1 \le k_1 \le K_1 \\ 1 \le k_2 \le K_2}} \theta_{k_1 k_2} \ve{\phi}_{k_1}^1\left(s_1\right) \ve{\phi}_{k_2}^2\left(s_2 \right) 
+  \label{eqn:basis_exp}
+\end{equation}
+where $\ve{\phi}^1(s) = \left( \phi^1_1(s), \phi^1_2(s), \dots, \phi^1_{K_1}(s) \right)$ is a known univariate basis system over the first spatial dimension. Similarly, $\ve{\phi}^2(s)$ is a univariate basis system over the second spatial dimension. The $\theta_{kl}$ are unknown random coefficients to be determined and $\ve{s}=\left( s_1, s_2 \right)^\top$ is the vector of spatial coordinates. In our work we consider the known basis system to be the B-spline basis system, see \citet{piegl_nurbs_1997} for a detailed description of such a basis system. We can write such a basis expansion more succinctly by using the tensor product notation. Let $\bar{\ve{\phi}}\left( \ve{s} \right) = \ve{\phi}^2\left( s_2 \right) \otimes \ve{\phi}^1\left( s_1 \right)$ where $\otimes$ represents the Kronecker product. Let $\ve{\theta} = \text{Vec}\left( \Theta \right)$ where $\text{Vec}$ is an operator which stacks columns of a matrix and $\Theta \in \mathbb{R}^{K_1 \times K_2}$ be the matrix formed of elements $\theta_{k_1 k_2}$. The Equation~\ref{eqn:basis_exp} can be written as:
+\begin{equation}
+  \mathcal{X}\left( \ve{s} \right) = \bar{\ve{\phi}}^\top \left( \ve{s} \right) \ve{\theta}
+  \label{eqn:tensor_basis_exp}
+\end{equation}
+
+Then for the $i^\text{th}$ realisation of $\mathcal{X}$ we can denote the coefficients to be determined by $\ve{\theta}^i$ from the observations $\ve{Y}_i = \{y_i(\ve{s}_{ij}) ; j=1,2,\dots,N\}$. We employ penalised least squares to estimate such coefficients using Equation~\ref{eqn:tensor_basis_exp}. That is our estimated coefficients are given by, \cite{ramsay_functional_2010}:
+\begin{equation}
+  \hat{\ve{\theta}}^i = \left( \bar{\ve{\phi}}^\top \ve{W} \bar{\ve{\phi}} + \ve{P}\left( \ve{\lambda} \right)\right)^{-1}\bar{\ve{\phi}}^\top \ve{W} \ve{Y}_i
+  \label{eqn:plss}
+\end{equation}
+where $\ve{W}$ is a known weighting matrix, $\ve{P}\left( \ve{\lambda} \right)$ is a penalty matrix whose size is controlled by regularisation parameter $\ve{\lambda}$ to control over fitting. In particular we consider the use of the following form of the penalty matrix for a two dimensional B-spline basis system proposed by \citet{wood_low-rank_2006} given by:
+\begin{equation}
+  \ve{P}\left( \ve{\lambda} \right) = \lambda_1 \ve{P}^1 \otimes \ve{I}_{K_2} + \lambda_2 \ve{I}_{K_1} \otimes \ve{P}^2
+  \label{eqn:penalty}
+\end{equation}
+where $\ve{\lambda}=\left( \lambda_1, \lambda_2 \right)^\top$ is our two dimensional regularisation parameter controlling the regularisation across each dimension. $\ve{P}^1 \in \mathbb{R}^{K_1 \times K_2}, \ve{P}^2 \in \mathbb{R}^{K_2 \times K_2}$ are marginal second order penalty matrices for each spatial dimension respectively. $\ve{I}_{K_1}, \ve{I}_{K_2}$ are identity matrix of order $K_1$ and $K_2$ respectively. The form of the one dimensional penalty matrices are fairly common and are formed through elements of:
+\begin{equation}
+  P_{l,m} = \int \ve{\phi}_l^{\prime \prime}(s) \ve{\phi}_k^{\prime \prime} ds
+  \label{eqn:pen_form}
+\end{equation}
+where $P_{lm}$ is the $\left( l, m  \right)^\text{th}$ element of matrix $\ve{P}$ and we replace $\ve{\phi}$ by the appropriate basis system for each dimension to give $\ve{P}^1$ and $\ve{P}^2$. We display the second order penalty we have chosen to use since it will penalise high curvature surfaces along each dimension. Our smoothed estimate for the $i^\text{th}$ realisation , $\chi_i(\ve{s})$, of $\mathcal{X}$ is then given by:
+\begin{equation}
+  \hat{\chi}_i\left( \ve{s} \right) = \bar{\ve{\phi}}^\top \left( \ve{s} \right) \hat{\ve{\theta}}^i
+  \label{eqn:smooth_estimator}
+\end{equation}
+With a functional representation of our discretely observed data from each image over time we can examine the variation between image functions that we observe. We consider the FPCA and MAFR methodology for such.
+\subsection{\label{ssec:fpca} Functional Principal Component Analysis}
+First developed as a theory for the optimal expansion of a continuous stochastic process proposed in \citet{karhunen_zur_1946} and \citet{loeve_fonctions_1946}. This theory was then to become known as the Karhunen-Lo\'{e}ve expansion and was applied to functional data in early works such as \citet{tucker_determination_1958}. For a summary of recent advances to the FPCA methodology see \citet{shang_survey_2013}.
+
+We state the basis properties of FPCA without proof; for more details see \citet{ramsay_functional_2010}. Alike in the multivariate technique PCA, FPCA seeks to find components which decreasingly capture variation in our observed functions. 
+
+Suppose as described in Section~\ref{ssec:fda_rep} we have $J$ surfaces $\chi_i\left( \ve{s} \right)$ for $i=1,2,\dots,J$ and alike PCA we wish to find modes of maximal variation. That is initially we wish to find an eigenfunction which depict the dominant mode of variation. Given the Karhunen-Lo\`{e}ve expansion of $\mathcal{X}$ by:
+\begin{equation}
+  \mathcal{X}(\ve{s}) - \mu(\ve{s}) = \sum_{k=1}^\infty \zeta_k \psi_k(\ve{s})
+  \label{eqn:kl}
+\end{equation}
+where $\mu(\ve{s})= E\left( \mathcal{X}\left( \ve{s} \right) \right)$ and $\psi_1, \psi_2, \dots$ are the orthonormal eigenfunctions of the linear Hilbert-Schmidt operator induced by $G\left( \ve{s},  \ve{s}^\prime \right) = \text{Cov}\left( \mathcal{X}\left( \ve{s} \right), \mathcal{X}\left( \ve{s}^\prime \right) \right)$. $\zeta_k$ is the principal component associated with the $k^\text{th}$ eigenfunction $\psi_k$ and defined by:
+\begin{equation}
+  \zeta_k = \int_\mathcal{S} \left( \mathcal{X}\left( \ve{s} \right) - \mu\left( \ve{s} \right) \right) \psi_k\left( \ve{s} \right) d\ve{s}
+  \label{eqn:pc}
+\end{equation}
+If we assume the eigenfunctions are ordered such that the corresponding eigenvalues are ordered as $\omega_1 \ge \omega_2, \dots$. Then it can be shown that the first eigenfunction $\psi_1$ depicts the dominant mode of variation, that is:
+\begin{equation}
+  \psi_1 = \argmax_{\lVert \psi \rVert = 1} \left( \text{Var}\left( \int_\mathcal{S}\left( \mathcal{X}\left( \ve{s} \right) - \mu\left( \ve{s} \right) \right) \psi\left( \ve{s} \right) \right) d\ve{s} \right)
+  \label{eqn:dominant}
+\end{equation}
+where $\lVert \cdot \rVert$ is the $L^2$ norm. The $k^\text{th}$ eigenfunction then similarly corresponds to the $k^\text{th}$ dominant mode of variation subject to being orthogonal to the previous $k-1$ eigenfunctions. 
+
+We use the Principal Component Analysis Though Conditional Expectation (PACE) methodology introduced in \citet{yao_functional_2005} to estimate the above model components including error variance ($\sigma_\varepsilon^2$), mean function ($\mu$),  eigenfunctions ($\psi_k,~k=1,2,\dots,K$), and scores ($\zeta_i, i=1,2,\dots, J$). The details of the estimation methodology can be found in \citet{yao_functional_2005}. In addition we can use our basis expansion representation as discussed in Section~\ref{ssec:fda_rep} to simplify the calculation of these estimates using the methodology discussed in \citet{ramsay_functional_2010} to simplify the estimate for $G\left( \ve{s}, \ve{s}^\prime \right)$.
+
+\subsection{\label{ssec:mafr}Maximal Autocorrelation Factor Rotation}
+The FPCA methodology utilises linear combinations of observed functions to find transformations that maximise the variance of the projected scores. However maximising variance may not be the optimal criterion to priorities components in our decomposition. For example we may prefer components which are more interpretable. One technique in the multivariate literature is to consider re-expressing components of the PCA which emphasis smoothness through a factor rotation. \citet{hooker_maximal_2016} introduces such a factor rotation for the FPCA methodology which re expresses  the functional subspace formed by the components of the FPCA decomposition in terms of directions of decreasing smoothness as represented by some smoothing metric. In the following we briefly discuss the components of such a rotation and refer the reader to \citet{hooker_maximal_2016} for more details.
+
+The methodology start by assuming we have already performed the FPCA decomposition and we retain the leading $K$ components writing:
+\begin{align*}
+  \ve{\psi}\left( \ve{s} \right) &= \left( \psi_1(\ve{s}), \psi_2(\ve{s}, \dots, \psi_K(\ve{s})  \right)^\top \\
+    \ve{\zeta}_i &= \left( \zeta_{i1}, \zeta_{i2}, \dots, \zeta_{iK} \right)^\top~\text{for } i=1,2,\dots,J
+\end{align*}
+for the retained eigenfunctions and the corresponding score vectors for the $J$ observed surfaces. 
+
+The smoothness we wish to promote in our component eigenfunctions is specified similarly to the roughness penalty as in Section~\ref{ssec:fda_rep}.  Let $L$ be a linear differential operator which captures such a smoothness constraint and define $\ve{P}^\text{mafr}$ to be the matrix formed through:
+\begin{equation}
+  \ve{P}^\text{mafr}_{kl} = \int_\mathcal{S} L\ve{\psi}_k\left(\ve{s}\right) L\ve{\psi}_l \left( \ve{s} \right) d\ve{s}
+  \label{eqn:mafr_pen}
+\end{equation}
+
+Then the MAFR rotation can be found by the Eigen decomposition of $\ve{P}^\text{mafr} \in \mathbb{R}^{K \times K}$ (see \citet{hooker_maximal_2016} for details). Write $\ve{P}^\text{mafr} = \ve{U} \ve{D} \ve{U}^\top$ for the Eigen decomposition of $\ve{P}^\text{mafr}$ then the MAFR components correspond to:
+\begin{equation}
+  \ve{\psi}_\text{mafr} = \ve{U}^\top \ve{\psi}
+  \label{eqn:mafr_rot}
+\end{equation}
+
+Similarly the MAFR scores corresponding to such rotated components can be found through $\ve{\zeta}^\text{mafr}_i = \ve{U} \ve{\zeta}_i$ for $i=1,2,\dots,J$.
+
+Such a methodology promotes smooth eigenfunctions in the sense of the constraint $L$ whilst retaining the total variance explained from the decomposition under the FPCA methodology. The methodology is also inexpensive to compute as the additional work required from the FPCA methodology is the Eigen decomposition of a $K \times K$ matrix where $K$ is typically relatively small.
+
+\section{\label{sec:forecasting}Forecasting Methodology}
+Forecasting of remotely sensed imagery is typically considered by forecasting each time series of individual pixels. Such a methodology is often complex due to the spatial dependency observed between neighbouring pixels which induces spatial dependency between the observed time series. By considering the data set as a collection of surfaces over space as we do in Section~\ref{ssec:fda_rep} we aim to simplify the forecasting methodology since the spatial dependency is already taken into account in our representation of the surface. We are thus left with a time series of functional variables. 
+
+Recent work by \citet{shang_ftsa_2013} has considered this case for univariate functional data. They propose a frame work known as Functional Time Series Analysis (FTSA) using the FPCA decomposition. The reason for forecasting using the FPCA decomposition is that it allows the complex case of forecasting functional variables to be reduced to forecasting univariate time series through the scores of the decomposition. We summarise the FTSA methodology in the following and refer the reader to \citet{shang_ftsa_2013} and the references within for further details. 
+
+As before we assume we have an $K$ component FPCA decomposition of our observed data $\ve{Y}$ as described in Section~\ref{ssec:fpca}. That is we can recover an estimate of our smooth signal surface $\chi_i\left( \ve{s} \right)$ by:
+\begin{equation}
+  \hat{\chi}_i\left( \ve{s} \right) = \hat{\mu}\left( \ve{s} \right) + \sum_{k=1}^K \hat{\zeta}_{ik} \hat{\psi}_k\left( \ve{s} \right) + \hat{\epsilon}_i\left( \ve{s} \right)
+  \label{eqn:recon}
+\end{equation}
+where $\hat{\mu}$, $\hat{\zeta}_{ik}$ and $\hat{\psi_k}$ are the sample mean surface estimate, estimated scores, and estimated eigenfunctions from the FPCA decomposition respectively. The error term, $\hat{\epsilon}_i$ is error due to using the truncated series expansion. \citet{shang_ftsa_2013} propose to utilise a univariate forecast of each score series, $\{\hat{\zeta}_{ik}\}_{i=1}^J$, which is then used to forecast the full series $\{\chi_i\left( \ve{s} \right)\}_{i=1}^J$.
+
+By conditioning on the set of smoothed surfaces
+\begin{equation*}
+  \hat{\ve{\chi}}\left( \ve{s} \right) = \left( \hat{\chi}_1\left( \ve{s} \right), \hat{\chi}_2\left( \ve{s} \right), \dots, \hat{\chi}_J\left( \ve{s} \right) \right)^\top
+\end{equation*}
+and the fixed principal components $\hat{\ve{\psi}} = \left( \hat{\psi}_1\left( \ve{s} \right), \hat{\psi}_2\left( \ve{s} \right), \dots, \hat{\psi}_K\left( \ve{s} \right) \right)^\top$, the $h$-step ahead forecasts $y_J\left( \ve{s} \right)$ are given by:
+\begin{equation}
+  \hat{y}_{J+h | J}\left( \ve{s} \right) = \hat{\mu}\left( \ve{s} \right) + \sum_{k=1}^K \hat{\zeta}_{J+h | J, k} \psi_k\left( \ve{s} \right)
+  \label{eqn:for}
+\end{equation}
+where $\hat{\zeta}_{J+h | J, k}$ is the $h$-step ahead forecast of the univariate score series for the $k^\text{th}$ component. The exact method of forecasting the univariate score series is not prescribed but there exists many univariate time series forecasting methodologies that can be chose, see \citet{hyndman_forecasting_2018} for a variety of examples. Since under FPCA methodology we have independent scores across components we can perform $K$ univariate forecasts to obtain all the forecasts we wish. 
+
+Similarly we propose using the FTSA methodology with the MAFR decomposition as described in Section~\ref{ssec:mafr}. The exact same methodology can be employed but using the MAFR scores and eigenfunctions. It is worthwhile to note that we no longer have independent score series as under the FPCA decomposition since they are correlated with the MAFR rotation $\ve{U}$ however practically we can still employ univariate time series method for each MAFR score series independently.
+
+
+\section{\label{sec:sim_exp}Simulated Experiment}
+This simulated study comprises of a data set of surface displacement measurements from a earthquake model simulation. The data comprises of $128$ image over time which are equally spaced apart from prior to the onset of earthquake to its end. Each image comprises of $512 \times 512$ pixels with a resolution of $90m$ in both directions. We take such a simulated data set as our ground truth observations and add known measurement error processes $\{\varepsilon_i\left( \ve{s} \right)\}_{i=1}^{128}$ to see how well the forecasting methodologies discussed in Section~\ref{sec:forecasting} perform under the various errors. 
+\subsection{\label{ssec:sim_exp_design}Experimental Design}
+Our simulated experiment is setup to compare and contrast the two forecasting methodologies using the FPCA and MAFR decompositions. To do so effectively we must keep our representation of the surfaces fixed in bot cases, as such we specify a tensor product B-spline basis with $32$ basis functions in each dimension as our basis expansion for the representation discussed in Section~\ref{ssec:fda_rep}. Such a basis is chosen as it is flexible to accommodate variation among images and across space whilst maintaining computational feasibility. In order to reduce computation time for such methodology we tile our image in $128 \times 128$ sections and apply the decomposition and forecasting techniques on each tile of the full image independently. We can then recover the full image by stitching together our forecasted tiles respectively. The regularisation parameter, $\ve{\lambda}$, we choose through Generalised Cross Validation (see \citet{lukas_robust_2006} for details). 
+
+For both decomposition techniques we choose five components, that is $K=5$ in Equation~\ref{eqn:recon}. The final design choice is the univariate forecasting methodology to use for the score processes. We choose to model such univariate series as a Gaussian Process Regression, \cite{williams_gaussian_2006}. That is:
+
+\begin{equation}
+  \zeta_{ik} = \zeta_k\left( t_i \right) \sim \mathcal{GP}\left( \ve{0}, A_k\left( t, t^\prime \right) \right)
+  \label{eqn:score_proc}
+\end{equation}
+where $A_k\left( t, t^\prime \right)$ is covariance kernel for component $k$ which we choose to be the Mat\`{e}rn covariance,  \cite{abramowitz_handbook_2013}. We choose to fix the shape parameter to be $1.5$ for the Mat\`{e}rn covariance but leave the length scales and variance parameters to be chosen through empirical maximum likelihood estimation (See \citet{williams_gaussian_2006} for implementation details). We allow the Mat\`{e}rn covariance to be different for each component.
+
+We employ three metrics for evaluation. We use the standard root mean square error (RMSE), mean absolute error (MAE), and the structured similarity index measure (SSIM), \cite{zhou_wang_image_2004}. We employ these metrics on the our ground truth images with our $h$-step ahead forecast for $h = 1, 3, 10,25$. To do so we utilise $90$ time steps as training images, the remaining $35$ images are left as test imagery under the $h$-step ahead time series standard procedure, \cite{hyndman_forecasting_2018}. 
+
+Finally, we specify three types of measurement error processes to compare against. The first process we consider is a low variance white noise process with $\sigma_\varepsilon^2 = 10.0$, the second is a high variance white noise process with $\sigma_\varepsilon^2 = 20.0$, and lastly we consider a spatially structured noise process with high variance. The spatial structure is again specified through a Gaussian Process with Mat\`{e}rn covariance. The covariance has shape parameter $1.5$ with variance $20$ and isotropic length scale of $10$.
+
+\subsection{\label{ssec:sim_exp_results} Simulation Results}
+
+\section{\label{sec:real_exp}Real world Experiment}
+\section{\label{sec:conc}Conclusion}
+
+\bibliography{references}
+\end{document}
+
